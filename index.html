@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deskly — Support Made Simple</title>
+<meta name="description" content="Deskly - Discord bot dashboard and live stats">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Deskly">
+<meta property="og:description" content="Discord bot dashboard and live stats">
+<meta property="og:url" content="https://theveryheavy.eu">
+<meta property="og:image" content="https://cdn.discordforge.org/api/img/discord/app-icons/1448318569128398939/6a2a8ef5cd0626011d1812722a02e5b5.webp?size=256">
+<meta property="og:image:width" content="256">
+<meta property="og:image:height" content="256">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Deskly">
+<meta name="twitter:description" content="Discord bot dashboard and live stats">
+<meta name="twitter:image" content="https://cdn.discordforge.org/api/img/discord/app-icons/1448318569128398939/6a2a8ef5cd0626011d1812722a02e5b5.webp?size=256">
+<link rel="canonical" href="https://theveryheavy.eu">
+<link rel="icon" type="image/webp" sizes="32x32" href="https://cdn.discordforge.org/api/img/discord/app-icons/1448318569128398939/6a2a8ef5cd0626011d1812722a02e5b5.webp?size=32">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Deskly","url":"https://theveryheavy.eu"}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0e1120;--navy-2:#141828;--navy-3:#1a2035;--navy-4:#222840;
+  --purple:#6b6ef9;--purple-dim:#4a4dc4;--purple-glow:#8b8eff;--purple-soft:rgba(107,110,249,0.12);
+  --coral:#ff4d4d;--white:#ffffff;
+  --gray-1:#f0f0ff;--gray-2:#a0a3c4;--gray-3:#6b6e8a;
+  --border:rgba(107,110,249,0.2);--border-dim:rgba(255,255,255,0.07);
+  --r-sm:8px;--r:14px;--r-lg:22px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--navy);color:var(--white);line-height:1.6;overflow-x:hidden}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(32px) scale(0.97);transition:opacity 0.7s cubic-bezier(.22,1,.36,1),transform 0.7s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:none}
+.reveal-left{opacity:0;transform:translateX(-32px);transition:opacity 0.7s cubic-bezier(.22,1,.36,1),transform 0.7s cubic-bezier(.22,1,.36,1)}
+.reveal-left.visible{opacity:1;transform:none}
+.reveal-scale{opacity:0;transform:scale(0.92);transition:opacity 0.6s cubic-bezier(.22,1,.36,1),transform 0.6s cubic-bezier(.22,1,.36,1)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+.reveal-stagger>.reveal{transition-delay:calc(0.08s * var(--i,0))}
+.delay-1{transition-delay:0.12s}.delay-2{transition-delay:0.2s}.delay-3{transition-delay:0.28s}
+.delay-4{transition-delay:0.36s}.delay-5{transition-delay:0.44s}.delay-6{transition-delay:0.52s}
+
+/* ── MOUSE GLOW ── */
+.mouse-glow{position:fixed;top:0;left:0;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(107,110,249,0.08) 0%,transparent 65%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);will-change:transform;opacity:0;transition:opacity 0.4s}
+
+/* ── SCROLL PROGRESS ── */
+.scroll-progress{position:fixed;top:64px;left:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--purple-glow));z-index:101;transition:width 0.1s linear;width:0%}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(14,17,32,0.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border-dim);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;transition:background 0.3s,border-color 0.3s,box-shadow 0.3s}
+nav.scrolled{background:rgba(14,17,32,0.96);border-bottom-color:rgba(107,110,249,0.12);box-shadow:0 1px 24px rgba(0,0,0,0.2)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-text{font-size:18px;font-weight:700;color:var(--white);letter-spacing:-0.3px}
+.nav-links{display:flex;align-items:center;gap:2rem;list-style:none}
+.nav-links a{color:var(--gray-2);text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1.5px;background:var(--purple);transition:width 0.25s;border-radius:2px}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{background:var(--purple);color:var(--white)!important;padding:8px 18px;border-radius:var(--r-sm);font-weight:600!important;transition:background 0.2s,transform 0.15s,box-shadow 0.2s!important}
+.nav-cta::after{display:none!important}
+.nav-cta:hover{background:var(--purple-glow)!important;transform:translateY(-1px);box-shadow:0 4px 16px rgba(107,110,249,0.3)!important}
+.nav-hamburger{display:none;background:none;border:1px solid var(--border-dim);border-radius:6px;padding:6px;cursor:pointer;color:var(--gray-2);transition:color 0.2s,border-color 0.2s}
+.nav-hamburger:hover{color:var(--white);border-color:var(--border)}
+.mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:rgba(20,24,40,0.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border-dim);padding:1rem 2rem;z-index:99;flex-direction:column;gap:0.5rem}
+.mobile-menu.open{display:flex;animation:slideDown 0.25s ease both}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.mobile-menu a{color:var(--gray-2);text-decoration:none;font-size:15px;font-weight:500;padding:10px 0;border-bottom:1px solid var(--border-dim);transition:color 0.2s}
+.mobile-menu a:last-child{border-bottom:none;color:var(--white);background:var(--purple);text-align:center;padding:10px;border-radius:var(--r-sm);margin-top:4px}
+
+/* ── SECTIONS ── */
+section{padding:100px 2rem;position:relative;z-index:2}
+.container{max-width:1100px;margin:0 auto}
+
+/* ── HERO ── */
+.hero{padding:120px 2rem 100px;text-align:center;position:relative;overflow:hidden;z-index:2}
+.hero-glow{position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:700px;background:radial-gradient(ellipse at center,rgba(107,110,249,0.12) 0%,rgba(107,110,249,0.04) 40%,transparent 70%);pointer-events:none;animation:glowPulse 5s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:0.6;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.05)}}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(107,110,249,0.08);border:1px solid rgba(107,110,249,0.25);border-radius:100px;padding:6px 18px;font-size:13px;font-weight:500;color:var(--purple-glow);margin-bottom:32px;animation:fadeSlideDown 0.7s ease both}
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+.hero-badge-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0;animation:ping 2s ease infinite}
+@keyframes ping{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.25)}}
+.hero h1{font-size:clamp(2.8rem,6.5vw,4.6rem);font-weight:800;line-height:1.08;letter-spacing:-2px;margin-bottom:22px;animation:fadeSlideUp 0.7s 0.12s ease both}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.hero h1 span{background:linear-gradient(135deg,var(--purple-glow),#b4b6ff,var(--purple-glow));background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientText 4s ease infinite}
+@keyframes gradientText{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:var(--gray-2);max-width:520px;margin:0 auto 44px;line-height:1.75;animation:fadeSlideUp 0.7s 0.22s ease both}
+.hero-buttons{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:60px;animation:fadeSlideUp 0.7s 0.32s ease both}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:var(--white);text-decoration:none;padding:14px 30px;border-radius:var(--r-sm);font-size:15px;font-weight:600;transition:background 0.2s,transform 0.15s,box-shadow 0.25s}
+.btn-primary:hover{background:var(--purple-glow);transform:translateY(-2px);box-shadow:0 8px 28px rgba(107,110,249,0.4)}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--gray-1);text-decoration:none;padding:14px 30px;border-radius:var(--r-sm);font-size:15px;font-weight:600;border:1px solid var(--border);transition:background 0.2s,border-color 0.2s,transform 0.15s,box-shadow 0.2s}
+.btn-secondary:hover{background:rgba(107,110,249,0.08);border-color:rgba(107,110,249,0.4);transform:translateY(-2px);box-shadow:0 4px 20px rgba(107,110,249,0.15)}
+
+/* ── AVATAR ── */
+.hero-avatar-wrap{display:flex;justify-content:center;margin-bottom:42px;animation:fadeSlideUp 0.7s 0.06s ease both;position:relative}
+.hero-avatar-ring{position:relative;border-radius:50%;padding:3px;background:linear-gradient(135deg,var(--purple),var(--purple-glow),var(--coral),var(--purple));background-size:300% 300%;animation:ringRotate 4s ease infinite;display:flex}
+@keyframes ringRotate{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hero-avatar{width:88px;height:88px;border-radius:50%;display:block;background:var(--navy-3);border:3px solid var(--navy)}
+.hero-avatar-ring::after{content:'';position:absolute;inset:-8px;border-radius:50%;background:radial-gradient(circle,rgba(107,110,249,0.15),transparent 70%);opacity:0;animation:ringGlow 3s ease infinite;pointer-events:none}
+@keyframes ringGlow{0%,100%{opacity:0;transform:scale(0.95)}50%{opacity:1;transform:scale(1.05)}}
+
+/* ── HERO STATUS STRIP ── */
+.status-strip{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeSlideUp 0.7s 0.42s ease both}
+.stat-pill{display:flex;align-items:center;gap:10px;background:rgba(20,24,40,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border-dim);border-radius:100px;padding:9px 20px;font-size:14px;font-weight:500;transition:border-color 0.2s,background 0.2s}
+.stat-pill:hover{border-color:var(--border);background:rgba(20,24,40,0.9)}
+.stat-pill-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;flex-shrink:0}
+.stat-pill-dot.checking{background:#facc15;animation:ping 1.5s infinite}
+.stat-pill-dot.offline{background:#f87171}
+.stat-pill-label{color:var(--gray-2);font-size:13px}
+.stat-pill-value{color:var(--white);font-weight:600}
+
+/* ── SECTION LABELS ── */
+.section-label{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:14px}
+.section-title{font-size:clamp(1.9rem,3.5vw,2.7rem);font-weight:800;letter-spacing:-0.8px;line-height:1.18;margin-bottom:16px}
+.section-sub{font-size:1.05rem;color:var(--gray-2);max-width:560px;line-height:1.75}
+
+/* ── FEATURES ── */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:52px}
+.feature-card{background:rgba(20,24,40,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border-dim);border-radius:var(--r);padding:30px;transition:border-color 0.25s,transform 0.3s,box-shadow 0.3s,background 0.3s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top left,rgba(107,110,249,0.06),transparent 60%);opacity:0;transition:opacity 0.4s}
+.feature-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(107,110,249,0.15),transparent);opacity:0;transition:opacity 0.3s}
+.feature-card:hover{background:rgba(20,24,40,0.8);border-color:rgba(107,110,249,0.3);transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.3),0 0 40px rgba(107,110,249,0.05)}
+.feature-card:hover::before{opacity:1}
+.feature-card:hover::after{opacity:1}
+.feature-icon{width:48px;height:48px;background:rgba(107,110,249,0.12);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;color:var(--purple-glow);transition:background 0.3s,transform 0.3s}
+.feature-card:hover .feature-icon{background:rgba(107,110,249,0.2);transform:scale(1.05)}
+.feature-card h3{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--white)}
+.feature-card p{font-size:14px;color:var(--gray-2);line-height:1.65}
+
+/* ── HOW IT WORKS ── */
+.steps-row{display:flex;gap:0;margin-top:52px;position:relative}
+.steps-row::before{content:'';position:absolute;top:28px;left:calc(16.6% + 14px);right:calc(16.6% + 14px);height:1px;background:linear-gradient(90deg,var(--purple),rgba(107,110,249,0.3),rgba(107,110,249,0.1))}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 20px;position:relative}
+.step-num{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple-dim));color:var(--white);font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:20px;position:relative;z-index:1;box-shadow:0 0 0 6px rgba(107,110,249,0.1),0 0 0 12px rgba(107,110,249,0.04);transition:transform 0.3s,box-shadow 0.3s}
+.step:hover .step-num{transform:scale(1.06);box-shadow:0 0 0 8px rgba(107,110,249,0.15),0 0 0 16px rgba(107,110,249,0.06)}
+.step h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.step p{font-size:13px;color:var(--gray-2);line-height:1.6}
+.step-code{display:inline-block;background:rgba(107,110,249,0.15);color:var(--purple-glow);padding:2px 8px;border-radius:5px;font-family:'Courier New',monospace;font-size:13px;margin-top:4px}
+
+/* ── COMMANDS ── */
+.commands-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:48px}
+.command-card{background:rgba(20,24,40,0.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid var(--border-dim);border-radius:var(--r-sm);padding:20px 22px;display:flex;align-items:flex-start;gap:14px;transition:border-color 0.25s,transform 0.25s,box-shadow 0.25s,background 0.25s}
+.command-card:hover{background:rgba(20,24,40,0.75);border-color:var(--border);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.command-slash{font-size:22px;font-weight:800;color:var(--purple);flex-shrink:0;line-height:1;margin-top:1px}
+.command-name{font-size:15px;font-weight:700;color:var(--white);font-family:'Courier New',monospace;margin-bottom:4px}
+.command-desc{font-size:13px;color:var(--gray-2);line-height:1.5}
+
+/* ── STATUS ── */
+.status-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:48px}
+.status-card{background:rgba(20,24,40,0.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border-dim);border-radius:var(--r);padding:22px 20px;text-align:center;transition:border-color 0.25s,transform 0.25s,box-shadow 0.25s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;position:relative;overflow:hidden}
+.status-card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:linear-gradient(90deg,transparent,var(--purple),transparent);opacity:0.4;transition:opacity 0.3s}
+.status-card:hover{border-color:var(--border);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+.status-card:hover::before{opacity:0.8}
+.status-icon{color:var(--gray-3);margin-bottom:2px;transition:color 0.25s}
+.status-card:nth-child(1):hover .status-icon{color:#4ade80}
+.status-card:nth-child(2):hover .status-icon{color:#6b6ef9}
+.status-card:nth-child(3):hover .status-icon{color:#22d3ee}
+.status-card:nth-child(4):hover .status-icon{color:#ff4d4d}
+.status-card-value{font-size:1.6rem;font-weight:800;color:var(--white);letter-spacing:-0.5px;line-height:1}
+.status-card-value.loading{color:var(--gray-3);font-size:1rem}
+.status-card-label{font-size:12px;color:var(--gray-2);font-weight:500;letter-spacing:0.3px;text-transform:uppercase}
+
+/* ── VOTE ── */
+.vote-platforms{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:48px}
+.vote-card{background:rgba(26,32,53,0.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid var(--border-dim);border-radius:var(--r);padding:20px 22px;display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--white);transition:border-color 0.25s,transform 0.25s,background 0.25s,box-shadow 0.25s}
+.vote-card:hover{border-color:var(--border);background:rgba(34,40,64,0.8);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.vote-favicon{width:36px;height:36px;border-radius:8px;object-fit:contain;background:var(--navy-4);padding:4px;flex-shrink:0}
+.vote-favicon-fallback{width:36px;height:36px;border-radius:8px;background:rgba(107,110,249,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:700;color:var(--purple-glow)}
+.vote-platform-name{font-size:14px;font-weight:700;color:var(--white);margin-bottom:2px}
+.vote-platform-action{font-size:12px;color:var(--purple-glow);font-weight:500}
+.vote-arrow{margin-left:auto;color:var(--gray-3);transition:transform 0.2s,color 0.2s}
+.vote-card:hover .vote-arrow{transform:translateX(3px);color:var(--purple-glow)}
+
+/* ── INVITE ── */
+.invite-section{text-align:center}
+.invite-box{background:rgba(20,24,40,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:var(--r-lg);padding:72px 40px;max-width:640px;margin:0 auto;position:relative;overflow:hidden}
+.invite-box::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,var(--purple),rgba(107,110,249,0.2),var(--purple-glow),rgba(107,110,249,0.2),var(--purple));background-size:400% 400%;animation:borderFlow 6s ease infinite;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+@keyframes borderFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.invite-box-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:600px;height:500px;background:radial-gradient(ellipse at center,rgba(107,110,249,0.08) 0%,transparent 70%);pointer-events:none;animation:glowPulse 5s ease-in-out infinite}
+.invite-box h2{font-size:2.1rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:14px;position:relative}
+.invite-box p{font-size:1rem;color:var(--gray-2);margin-bottom:32px;line-height:1.75;position:relative}
+
+/* ── FOOTER ── */
+footer{padding:32px 2rem 24px;border-top:1px solid var(--border-dim);display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.footer-links{display:flex;gap:20px;list-style:none;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--gray-3);text-decoration:none;font-size:13px;transition:color 0.2s}
+.footer-links a:hover{color:var(--white)}
+.footer-copy{font-size:12px;color:var(--gray-3)}
+.footer-disclaimer{font-size:11px;color:var(--gray-3);width:100%;text-align:center;padding-top:8px;border-top:1px solid var(--border-dim);margin-top:4px}
+
+/* ── FLOATING PARTICLES ── */
+.particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.particle{position:absolute;border-radius:50%;opacity:0;animation:float linear infinite}
+@keyframes float{0%{opacity:0;transform:translateY(0) rotate(0deg)}10%{opacity:0.5}90%{opacity:0.15}100%{opacity:0;transform:translateY(-100vh) rotate(720deg)}}
+
+/* ── COUNTER ── */
+.counter-value{display:inline-block}
+
+@media(max-width:700px){
+  nav{padding:0 1rem}
+  .nav-links{display:none}
+  .nav-hamburger{display:flex;align-items:center;justify-content:center}
+  section{padding:60px 1.2rem}
+  .hero{padding:72px 1.2rem 56px}
+  .steps-row{flex-direction:column;gap:32px}
+  .steps-row::before{display:none}
+  footer{padding:24px 1rem 20px}
+  .invite-box{padding:48px 24px}
+  .mouse-glow{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="mouse-glow" id="mouseGlow"></div>
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img id="nav-avatar" src="https://discordforge.org//_next/image?url=https%3A%2F%2Fcdn.discordforge.org%2Fapi%2Fimg%2Fdiscord%2Fapp-icons%2F1448318569128398939%2F6a2a8ef5cd0626011d1812722a02e5b5.webp%3Fsize%3D128&w=384&q=75" width="32" height="32" style="border-radius:8px;background:var(--navy-3)" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%236b6ef9%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-family=%22Inter,sans-serif%22 font-weight=%22800%22 font-size=%2217%22 fill=%22white%22>D</text><circle cx=%2223%22 cy=%228%22 r=%224%22 fill=%22%23ff4d4d%22/></svg>'">
+    <span class="nav-logo-text">Deskly</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#commands">Commands</a></li>
+    <li><a href="#status">Status</a></li>
+    <li><a href="#vote">Vote</a></li>
+    <li><a href="https://discord.com/oauth2/authorize?client_id=1448318569128398939&permissions=8&scope=bot%20applications.commands" class="nav-cta">Add to Discord</a></li>
+  </ul>
+  <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#features" onclick="closeMenu()">Features</a>
+  <a href="#how" onclick="closeMenu()">How it works</a>
+  <a href="#commands" onclick="closeMenu()">Commands</a>
+  <a href="#status" onclick="closeMenu()">Status</a>
+  <a href="#vote" onclick="closeMenu()">Vote</a>
+  <a href="https://discord.com/oauth2/authorize?client_id=1448318569128398939&permissions=8&scope=bot%20applications.commands">Add to Discord →</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="hero-badge reveal">
+    <div class="hero-badge-dot"></div>
+    Now live on Discord
+  </div>
+
+  <div class="hero-avatar-wrap reveal delay-1">
+    <div class="hero-avatar-ring">
+      <img class="hero-avatar" id="hero-avatar"
+        src="https://discordforge.org//_next/image?url=https%3A%2F%2Fcdn.discordforge.org%2Fapi%2Fimg%2Fdiscord%2Fapp-icons%2F1448318569128398939%2F6a2a8ef5cd0626011d1812722a02e5b5.webp%3Fsize%3D128&w=384&q=75"
+        alt="Deskly bot avatar"
+        onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2288%22 height=%2288%22 viewBox=%220 0 88 88%22><rect width=%2288%22 height=%2288%22 rx=%2244%22 fill=%22%236b6ef9%22/><text x=%2244%22 y=%2260%22 text-anchor=%22middle%22 font-family=%22Inter,sans-serif%22 font-weight=%22800%22 font-size=%2244%22 fill=%22white%22>D</text><circle cx=%2265%22 cy=%2222%22 r=%2210%22 fill=%22%23ff4d4d%22/></svg>'">
+    </div>
+  </div>
+
+  <h1 class="reveal delay-1">Discord support,<br><span>finally organized.</span></h1>
+  <p class="hero-sub reveal delay-2">Deskly brings professional ticket management to your Discord server. Setup in minutes, scales to thousands.</p>
+
+  <div class="hero-buttons reveal delay-3">
+    <a href="https://discord.com/oauth2/authorize?client_id=1448318569128398939&permissions=8&scope=bot%20applications.commands" class="btn-primary">
+      <svg width="20" height="20" viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,56.6,124.21,32.65,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
+      Add to Discord
+    </a>
+    <a href="#features" class="btn-secondary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+      See how it works
+    </a>
+  </div>
+
+  <div class="status-strip reveal delay-4">
+    <div class="stat-pill">
+      <div class="stat-pill-dot checking" id="hero-dot"></div>
+      <span class="stat-pill-label">Status</span>
+      <span class="stat-pill-value" id="hero-status">Checking…</span>
+    </div>
+    <div class="stat-pill">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-2)" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="stat-pill-label">Servers</span>
+      <span class="stat-pill-value" id="hero-servers">—</span>
+    </div>
+    <div class="stat-pill">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-2)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span class="stat-pill-label">Latency</span>
+      <span class="stat-pill-value" id="hero-ping">—</span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-label reveal">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Why Deskly
+    </div>
+    <h2 class="section-title reveal">Everything your support team needs</h2>
+    <p class="section-sub reveal">Built for multi-server scale from day one. No config files, no JSON editing — everything lives in PostgreSQL.</p>
+
+    <div class="features-grid">
+      <div class="feature-card reveal delay-1">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+        </div>
+        <h3>Button-based ticketing</h3>
+        <p>Ticket panels with one-click open buttons. No commands needed for users — just click and a private channel appears instantly.</p>
+      </div>
+      <div class="feature-card reveal delay-2">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3>Private channel system</h3>
+        <p>Every ticket gets its own Discord channel with proper permission overwrites. Only the opener and support staff can see it.</p>
+      </div>
+      <div class="feature-card reveal delay-3">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+        </div>
+        <h3>Ticket claiming</h3>
+        <p>Staff can claim tickets to signal ownership. Prevents duplicate replies and builds clear accountability across your team.</p>
+      </div>
+      <div class="feature-card reveal delay-1">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <h3>Automatic transcripts</h3>
+        <p>When a ticket closes, a full plain-text transcript is saved to PostgreSQL and posted to your log channel as an attachment.</p>
+      </div>
+      <div class="feature-card reveal delay-2">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        </div>
+        <h3>Add and remove users</h3>
+        <p>Staff can add or remove members from any ticket mid-conversation. Perfect for escalations and department handoffs.</p>
+      </div>
+      <div class="feature-card reveal delay-3">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Full multi-server isolation</h3>
+        <p>Each Discord server has its own config, roles, and ticket counter stored in PostgreSQL. Nothing bleeds between guilds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="section-label reveal">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Getting started
+    </div>
+    <h2 class="section-title reveal">Up and running in three steps</h2>
+    <p class="section-sub reveal">No config files, no JSON editing, no CLI wizards. Everything is a Discord command.</p>
+
+    <div class="steps-row">
+      <div class="step reveal delay-1">
+        <div class="step-num">1</div>
+        <h3>Invite the bot</h3>
+        <p>Click Add to Discord and grant the required permissions. Deskly registers your server automatically on join.</p>
+      </div>
+      <div class="step reveal delay-2">
+        <div class="step-num">2</div>
+        <h3>Run <span class="step-code">/setup</span></h3>
+        <p>Configure your support role, admin role, ticket category, and log channel. All stored in the database — no files touched.</p>
+      </div>
+      <div class="step reveal delay-3">
+        <div class="step-num">3</div>
+        <h3>Post with <span class="step-code">/panel</span></h3>
+        <p>Drop a ticket panel in any channel. Your users see a button, click it, and a private support channel appears. Done.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMANDS -->
+<section id="commands">
+  <div class="container">
+    <div class="section-label reveal">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      Slash commands
+    </div>
+    <h2 class="section-title reveal">Simple to set up, easy to use</h2>
+    <p class="section-sub reveal">Six commands cover everything — setup, management, and information.</p>
+
+    <div class="commands-grid">
+      <div class="command-card reveal delay-1">
+        <div class="command-slash">/</div>
+        <div><div class="command-name">setup</div><div class="command-desc">Configure roles, ticket category, and log channel for your server.</div></div>
+      </div>
+      <div class="command-card reveal delay-2">
+        <div class="command-slash">/</div>
+        <div><div class="command-name">panel</div><div class="command-desc">Post a ticket panel embed with an Open Ticket button in any channel.</div></div>
+      </div>
+      <div class="command-card reveal delay-3">
+        <div class="command-slash">/</div>
+        <div><div class="command-name">reset-config</div><div class="command-desc">Wipe all bot configuration for your server with a confirmation step.</div></div>
+      </div>
+      <div class="command-card reveal delay-1">
+        <div class="command-slash">/</div>
+        <div><div class="command-name">ping</div><div class="command-desc">Check bot roundtrip latency and WebSocket heartbeat in real time.</div></div>
+      </div>
+      <div class="command-card reveal delay-2">
+        <div class="command-slash">/</div>
+        <div><div class="command-name">help</div><div class="command-desc">Show all available commands with descriptions in a clean embed.</div></div>
+      </div>
+      <div class="command-card reveal delay-3">
+        <div class="command-slash">/</div>
+        <div><div class="command-name">vote</div><div class="command-desc">Show voting links for all bot listing platforms with one-click buttons.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATUS -->
+<section id="status">
+  <div class="container">
+    <div class="section-label reveal">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Live status
+    </div>
+    <h2 class="section-title reveal">Always watching</h2>
+    <p class="section-sub reveal">Stats fetched from the Discord API. Updates every 60 seconds.</p>
+
+    <div class="status-cards">
+      <div class="status-card reveal delay-1">
+        <svg class="status-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div class="status-card-value" id="status-online-val">—</div>
+        <div class="status-card-label">Status</div>
+      </div>
+      <div class="status-card reveal delay-2">
+        <svg class="status-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="2"/><rect x="14" y="2" width="8" height="8" rx="2"/><rect x="2" y="14" width="8" height="8" rx="2"/><rect x="14" y="14" width="8" height="8" rx="2"/></svg>
+        <div class="status-card-value loading" id="status-servers">—</div>
+        <div class="status-card-label">Servers</div>
+      </div>
+      <div class="status-card reveal delay-3">
+        <svg class="status-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div class="status-card-value loading" id="status-users">—</div>
+        <div class="status-card-label">Users</div>
+      </div>
+      <div class="status-card reveal delay-4">
+        <svg class="status-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <div class="status-card-value loading" id="status-ping">—</div>
+        <div class="status-card-label">Latency</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VOTE -->
+<section id="vote">
+  <div class="container">
+    <div class="section-label reveal">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+      Support Deskly
+    </div>
+    <h2 class="section-title reveal">Vote for us</h2>
+    <p class="section-sub reveal">Voting helps more communities discover Deskly. Most platforms allow a vote every 12–24 hours.</p>
+
+    <div class="vote-platforms">
+      <a href="https://discordbotlist.com/bots/deskly/upvote" target="_blank" rel="noopener" class="vote-card reveal delay-1">
+        <img class="vote-favicon" src="https://www.google.com/s2/favicons?domain=discordbotlist.com&sz=64" alt="discordbotlist.com" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="vote-favicon-fallback" style="display:none">DBL</div>
+        <div>
+          <div class="vote-platform-name">discordbotlist.com</div>
+          <div class="vote-platform-action">Vote now →</div>
+        </div>
+        <svg class="vote-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+      <a href="https://top.gg/bot/1448318569128398939/vote" target="_blank" rel="noopener" class="vote-card reveal delay-2">
+        <img class="vote-favicon" src="https://www.google.com/s2/favicons?domain=top.gg&sz=64" alt="top.gg" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="vote-favicon-fallback" style="display:none">top</div>
+        <div>
+          <div class="vote-platform-name">top.gg</div>
+          <div class="vote-platform-action">Vote now →</div>
+        </div>
+        <svg class="vote-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+      <a href="https://discordforge.org/bot/1448318569128398939" target="_blank" rel="noopener" class="vote-card reveal delay-3">
+        <img class="vote-favicon" src="https://www.google.com/s2/favicons?domain=discordforge.org&sz=64" alt="discordforge.org" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="vote-favicon-fallback" style="display:none">DF</div>
+        <div>
+          <div class="vote-platform-name">discordforge.org</div>
+          <div class="vote-platform-action">Vote now →</div>
+        </div>
+        <svg class="vote-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+      <a href="https://discord.bots.gg/bots/1448318569128398939" target="_blank" rel="noopener" class="vote-card reveal delay-4">
+        <img class="vote-favicon" src="https://www.google.com/s2/favicons?domain=discord.bots.gg&sz=64" alt="discord.bots.gg" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="vote-favicon-fallback" style="display:none">BG</div>
+        <div>
+          <div class="vote-platform-name">discord.bots.gg</div>
+          <div class="vote-platform-action">Vote now →</div>
+        </div>
+        <svg class="vote-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+      <a href="https://discord.me/deskly" target="_blank" rel="noopener" class="vote-card reveal delay-5">
+        <img class="vote-favicon" src="https://www.google.com/s2/favicons?domain=discord.me&sz=64" alt="discord.me" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="vote-favicon-fallback" style="display:none">D.me</div>
+        <div>
+          <div class="vote-platform-name">discord.me</div>
+          <div class="vote-platform-action">View page →</div>
+        </div>
+        <svg class="vote-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- INVITE CTA -->
+<section class="invite-section">
+  <div class="container">
+    <div class="invite-box reveal-scale">
+      <div class="invite-box-glow"></div>
+      <h2>Ready to simplify your support?</h2>
+      <p>Add Deskly to your server in seconds. No config files, no manual setup — just run <code style="background:rgba(107,110,249,0.15);padding:2px 8px;border-radius:5px;font-size:0.9em;color:#8b8eff">/setup</code> and you're live.</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative">
+        <a href="https://discord.com/oauth2/authorize?client_id=1448318569128398939&permissions=8&scope=bot%20applications.commands" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,56.6,124.21,32.65,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
+          Add to Discord
+        </a>
+        <a href="#vote" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/></svg>
+          Vote for Deskly
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#commands">Commands</a></li>
+    <li><a href="#status">Status</a></li>
+    <li><a href="#vote">Vote</a></li>
+    <li><a href="https://discord.com/oauth2/authorize?client_id=1448318569128398939&permissions=8&scope=bot%20applications.commands">Invite</a></li>
+  </ul>
+  <span class="footer-copy">© 2026 Deskly · discord.js v14</span>
+  <span class="footer-disclaimer">Not affiliated with Discord Inc. Deskly is only a Discord bot.</span>
+</footer>
+
+<script>
+/* ── MOUSE GLOW ── */
+const glow = document.getElementById('mouseGlow');
+let glowTimer;
+document.addEventListener('mousemove', e => {
+  glow.style.transform = `translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`;
+  glow.style.opacity = '1';
+  clearTimeout(glowTimer);
+  glowTimer = setTimeout(() => glow.style.opacity = '0', 2000);
+});
+
+/* ── SCROLL PROGRESS + NAV ── */
+const nav = document.getElementById('nav');
+const progress = document.getElementById('scrollProgress');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.width = docHeight > 0 ? (scrollTop / docHeight * 100) + '%' : '0%';
+  nav.classList.toggle('scrolled', scrollTop > 40);
+});
+
+/* ── SCROLL REVEAL ── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal,.reveal-left,.reveal-scale').forEach(el => observer.observe(el));
+
+/* ── COUNTER ANIMATION ── */
+let countersAnimated = false;
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !countersAnimated) {
+      countersAnimated = true;
+      animateCounters();
+      counterObserver.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const statusSection = document.getElementById('status');
+if (statusSection) counterObserver.observe(statusSection);
+
+function animateCounters() {
+  const targets = [
+    { el: document.getElementById('status-servers'), value: parseInt(document.getElementById('status-servers').textContent.replace(/,/g,'')) || 0 },
+    { el: document.getElementById('status-users'), value: parseInt(document.getElementById('status-users').textContent.replace(/,/g,'')) || 0 },
+    { el: document.getElementById('hero-servers'), value: parseInt(document.getElementById('hero-servers').textContent.replace(/,/g,'')) || 0 }
+  ];
+  targets.forEach(t => {
+    if (!t.el || t.value === 0 || t.el.textContent === '—') return;
+    const duration = 800;
+    const start = performance.now();
+    const from = 0;
+    function update(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const current = Math.round(from + (t.value - from) * eased);
+      t.el.textContent = t.value > 999 ? current.toLocaleString() : current;
+      if (p < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  });
+}
+
+/* ── PARTICLES ── */
+(function(){
+  const c = document.getElementById('particles');
+  if (!c) return;
+  const colors = ['var(--purple)', 'var(--purple-glow)', 'var(--coral)', 'var(--gray-2)'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const isGlow = i > 18;
+    p.style.cssText = `left:${Math.random()*100}%;bottom:${-10+Math.random()*30}px;animation-duration:${10+Math.random()*18}s;animation-delay:${Math.random()*14}s;width:${isGlow ? 3+Math.random()*3 : 1.5+Math.random()*2}px;height:${isGlow ? 3+Math.random()*3 : 1.5+Math.random()*2}px;background:${colors[i%4]};opacity:${0.15+Math.random()*0.4}`;
+    if (isGlow) p.style.boxShadow = '0 0 6px rgba(107,110,249,0.3)';
+    c.appendChild(p);
+  }
+})();
+
+/* ── LIVE STATS ── */
+async function fetchStats() {
+  let servers = null, users = null, latency = null, online = false;
+  let rateLimited = false, blocked = false;
+
+  try {
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 5000);
+    const res = await fetch('https://api.theveryheavy.eu/api/stats', { signal: ctrl.signal });
+
+    if (res.status === 429) {
+      rateLimited = true;
+    } else if (!res.ok) {
+      blocked = true;
+    } else {
+      const d = await res.json();
+      servers = d.servers;
+      users   = d.users;
+      latency = d.latency;
+      online  = d.online;
+    }
+  } catch (_) {
+    blocked = true;
+  }
+
+  updateHero(online, servers, latency);
+  updateStatus(online, servers, users, latency, rateLimited, blocked);
+}
+
+function updateHero(online, servers, latency) {
+  const dot = document.getElementById('hero-dot');
+  dot.className = 'stat-pill-dot' + (online ? '' : ' offline');
+  document.getElementById('hero-status').textContent = online ? 'Online' : 'Unavailable';
+  document.getElementById('hero-servers').textContent = servers !== null ? servers.toLocaleString() : '—';
+  document.getElementById('hero-ping').textContent = latency !== null ? latency + 'ms' : '—';
+}
+
+function updateStatus(online, servers, users, latency, rateLimited, blocked) {
+  const onlineVal = document.getElementById('status-online-val');
+  onlineVal.style.color = online ? '#4ade80' : '#f87171';
+  if (rateLimited) onlineVal.textContent = 'rate limited';
+  else if (blocked) onlineVal.textContent = 'blocked';
+  else onlineVal.textContent = online ? 'Online' : 'Unknown';
+
+  const srvEl = document.getElementById('status-servers');
+  const usrEl = document.getElementById('status-users');
+  const latEl = document.getElementById('status-ping');
+
+  const msg = rateLimited ? 'rate limited' : blocked ? 'blocked' : null;
+  if (msg) {
+    srvEl.textContent = msg; srvEl.className = 'status-card-value';
+    usrEl.textContent = msg; usrEl.className = 'status-card-value';
+    latEl.textContent = msg; latEl.className = 'status-card-value';
+  } else {
+    srvEl.className = 'status-card-value' + (servers !== null ? '' : ' loading');
+    srvEl.textContent = servers !== null ? servers.toLocaleString() : '—';
+    if (servers !== null) srvEl.style.color = '#6b6ef9';
+
+    usrEl.className = 'status-card-value' + (users !== null ? '' : ' loading');
+    usrEl.textContent = users !== null ? users.toLocaleString() : '—';
+    if (users !== null) usrEl.style.color = '#22d3ee';
+
+    latEl.className = 'status-card-value' + (latency !== null ? '' : ' loading');
+    latEl.textContent = latency !== null ? latency + 'ms' : '—';
+    if (latency !== null) latEl.style.color = '#ff4d4d';
+  }
+
+  if (!countersAnimated && !rateLimited && !blocked) animateCounters();
+}
+
+/* ── MOBILE NAV ── */
+function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('open'); }
+function closeMenu() { document.getElementById('mobile-menu').classList.remove('open'); }
+
+fetchStats();
+setInterval(fetchStats, 60000);
+</script>
+</body>
+</html>

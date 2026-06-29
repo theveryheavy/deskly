@@ -1,0 +1,11 @@
+/*
+  Cache-Control: public, max-age=0, s-maxage=3600
+
+/assets/*
+  Cache-Control: public, max-age=86400, immutable
+
+*.webp
+  Cache-Control: public, max-age=86400, immutable
+
+*.svg
+  Cache-Control: public, max-age=86400, immutable

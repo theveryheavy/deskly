@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deskly — Page Not Found</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/webp" sizes="32x32" href="https://cdn.discordforge.org/api/img/discord/app-icons/1448318569128398939/6a2a8ef5cd0626011d1812722a02e5b5.webp?size=32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0e1120;--navy-2:#141828;--navy-3:#1a2035;--white:#ffffff;--purple:#6b6ef9;--purple-glow:#8b8eff;--gray-2:#a0a3c4;--gray-3:#6b6e8a;--border-dim:rgba(255,255,255,0.07)}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--navy);color:var(--white);line-height:1.6;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
+.not-found{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem}
+.not-found-inner{max-width:480px}
+.not-found h1{font-size:clamp(5rem,12vw,8rem);font-weight:800;background:linear-gradient(135deg,var(--purple-glow),#b4b6ff,var(--purple-glow));background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientText 4s ease infinite;line-height:1;margin-bottom:8px}
+@keyframes gradientText{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.not-found h2{font-size:1.4rem;font-weight:700;margin-bottom:12px}
+.not-found p{color:var(--gray-2);margin-bottom:32px;font-size:1rem}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--purple);color:var(--white);text-decoration:none;padding:14px 30px;border-radius:8px;font-size:15px;font-weight:600;transition:background 0.2s,transform 0.15s,box-shadow 0.25s;cursor:pointer;border:none}
+.btn:hover{background:var(--purple-glow);transform:translateY(-2px);box-shadow:0 8px 28px rgba(107,110,249,0.4)}
+footer{padding:32px 2rem 24px;border-top:1px solid var(--border-dim);display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.footer-copy{font-size:12px;color:var(--gray-3)}
+.footer-disclaimer{font-size:11px;color:var(--gray-3);width:100%;text-align:center;padding-top:8px;border-top:1px solid var(--border-dim);margin-top:4px}
+</style>
+</head>
+<body>
+<div class="not-found">
+  <div class="not-found-inner">
+    <h1>404</h1>
+    <h2>Page not found</h2>
+    <p>The page you're looking for doesn't exist or has been moved.</p>
+    <button class="btn" onclick="history.back()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Go back
+    </button>
+  </div>
+</div>
+<footer>
+  <span class="footer-copy">© 2026 Deskly · discord.js v14</span>
+  <span class="footer-disclaimer">Not affiliated with Discord Inc. Deskly is only a Discord bot.</span>
+</footer>
+</body>
+</html>
